@@ -70,12 +70,12 @@ class PollReader():
                     seperated.append(templst[i].strip())
             #print(seperated)
             # map each part of the row to the correct column
-            self.data_dict['month'] = seperated[0]
-            self.data_dict['date'] = int(seperated[1])
-            self.data_dict['sample'] = int(seperated[2])
-            self.data_dict['sample type'] = seperated[3]
-            self.data_dict['Harris result'] = float(seperated[4])
-            self.data_dict['Trump result'] = float(seperated[5])
+            self.data_dict['month'].append(seperated[0])
+            self.data_dict['date'].append(int(seperated[1]))
+            self.data_dict['sample'].append(int(seperated[2]))
+            self.data_dict['sample type'].append(seperated[3])
+            self.data_dict['Harris result'].append(float(seperated[4]))
+            self.data_dict['Trump result'].append(float(seperated[5]))
         return self.data_dict
 
     def highest_polling_candidate(self):
