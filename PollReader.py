@@ -56,18 +56,27 @@ class PollReader():
 
         # iterate through each row of the data
         for i in self.raw_data:
-
+            if i == self.raw_data[0]:
+                continue
             # split up the row by column
-            seperated = i.split(' ')
-
+            templst = i.split(',')
+            seperated = []
+            for i in range(len(templst)):
+                if i == 2:
+                    ttlst = templst[i].split(' ')
+                    seperated.append(ttlst[0])
+                    seperated.append(ttlst[1])
+                else:
+                    seperated.append(templst[i].strip())
+            #print(seperated)
             # map each part of the row to the correct column
-            self.data_dict['month'].append(seperated[0])
-            self.data_dict['date'].append(int(seperated[1]))
-            self.data_dict['sample'].append(int(seperated[2]))
-            self.data_dict['sample type'].append(seperated[2])
-            self.data_dict['Harris result'].append(float(seperated[3]))
-            self.data_dict['Trump result'].append(float(seperated[4]))
-
+            self.data_dict['month'] = seperated[0]
+            self.data_dict['date'] = int(seperated[1])
+            self.data_dict['sample'] = int(seperated[2])
+            self.data_dict['sample type'] = seperated[3]
+            self.data_dict['Harris result'] = float(seperated[4])
+            self.data_dict['Trump result'] = float(seperated[5])
+        return self.data_dict
 
     def highest_polling_candidate(self):
         """
@@ -80,7 +89,27 @@ class PollReader():
             str: A string indicating the candidate with the highest polling percentage or EVEN,
              and the highest polling percentage.
         """
-        pass
+        current_harris_max = 0
+        current_trump_max = 0
+        current_max = 0
+        current_candidate = ""
+        for i in range(len(self.data_dict)):
+            if self.data_dict['Harris result'][i] > current_harris_max:
+                current_harris_max = self.data_dict['Harris result'][i]
+
+            if self.data_dict['Trump result'][i] > current_trump_max:
+                current_trump_max = self.data_dict['Trump result'][i]
+
+        if current_harris_max > current_trump_max:
+            current_candidate = "Harris"
+            current_max = current_harris_max
+        elif current_trump_max > current_harris_max:
+            current_candidate = "Trump"
+            current_max = current_trump_max
+        else:
+            current_candidate = "EVEN"
+        return f"{current_candidate} {current_max}"
+
 
 
     def likely_voter_polling_average(self):
@@ -91,7 +120,13 @@ class PollReader():
             tuple: A tuple containing the average polling percentages for Harris and Trump
                    among likely voters, in that order.
         """
-        pass
+        harristotal = 0
+        trumptotal = 0
+        for i in range(len(self.data_dict)):
+            if self.data_dict['sample type'][i] == "Likely Voter":
+                harristotal += self.data_dict['Harris result'][i]
+                trumptotal += self.data_dict['Trump result'][i]
+        return harristotal / len(self.data_dict), trumptotal / len(self.data_dict)
 
 
     def polling_history_change(self):
@@ -105,7 +140,15 @@ class PollReader():
             tuple: A tuple containing the net change for Harris and Trump, in that order.
                    Positive values indicate an increase, negative values indicate a decrease.
         """
-        pass
+        harrislst = []
+        trumplst = []
+        for i in range(len(self.data_dict)):
+            if self.data_dict['sample type'] == "LV":
+                self.data_dict['Harris result'][i] = self.data_dict['Harris result'][i] / 100
+                self.data_dict['Trump result'][i] = self.data_dict['Trump result'][i] / 100
+        earliest_avg = (sum(self.data_dict['Harris result'][:30]) / len(self.data_dict['Harris result'][:30]))
+        latest_avg = (sum(self.data_dict['Harris result'][-30:]) / len(self.data_dict['Harris result'][-30:]))
+        return (latest_avg - earliest_avg), (latest_avg - earliest_avg)
 
 
 class TestPollReader(unittest.TestCase):
