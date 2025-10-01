@@ -123,11 +123,15 @@ class PollReader():
         """
         harristotal = 0
         trumptotal = 0
+        count = 0
         for i in range(len(self.data_dict)):
-            if self.data_dict['sample type'][i] == "Likely Voter":
+            if self.data_dict['sample type'][i] == "LV":
                 harristotal += self.data_dict['Harris result'][i]
                 trumptotal += self.data_dict['Trump result'][i]
-        return harristotal / len(self.data_dict), trumptotal / len(self.data_dict)
+                count+=1
+        print(harristotal, trumptotal)
+        print(count)
+        return harristotal / count, trumptotal / count
 
 
     def polling_history_change(self):
@@ -141,12 +145,8 @@ class PollReader():
             tuple: A tuple containing the net change for Harris and Trump, in that order.
                    Positive values indicate an increase, negative values indicate a decrease.
         """
-        harrislst = []
-        trumplst = []
-        for i in range(len(self.data_dict)):
-            if self.data_dict['sample type'] == "LV":
-                self.data_dict['Harris result'][i] = self.data_dict['Harris result'][i] / 100
-                self.data_dict['Trump result'][i] = self.data_dict['Trump result'][i] / 100
+
+
         earliest_avg = (sum(self.data_dict['Harris result'][:30]) / len(self.data_dict['Harris result'][:30]))
         latest_avg = (sum(self.data_dict['Harris result'][-30:]) / len(self.data_dict['Harris result'][-30:]))
         return (latest_avg - earliest_avg), (latest_avg - earliest_avg)
