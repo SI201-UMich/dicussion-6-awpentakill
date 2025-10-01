@@ -108,6 +108,7 @@ class PollReader():
             current_max = current_trump_max
         else:
             current_candidate = "EVEN"
+        print(current_candidate, current_max)
         return f"{current_candidate} {current_max}"
 
 
